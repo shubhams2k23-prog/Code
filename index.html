@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-
 body{
 font-family:Arial, sans-serif;
 background:linear-gradient(135deg,#eef2f3,#dfe9f3);
@@ -59,7 +58,6 @@ color:white;
 margin-top:20px;
 font-weight:bold;
 }
-
 </style>
 </head>
 
@@ -73,7 +71,7 @@ font-weight:bold;
 
 <div class="buttons">
 <button class="yes" id="yesBtn">😄 Yes</button>
-<button class="no" onclick="noClick()">🙃 No</button>
+<button class="no" id="noBtn" onclick="noClick()">🙃 No</button>
 </div>
 
 <div id="message"></div>
@@ -83,32 +81,59 @@ font-weight:bold;
 <script>
 
 const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
 const card=document.getElementById("card");
 
 function moveButton(){
 
 const cardRect=card.getBoundingClientRect();
-const btnRect=yesBtn.getBoundingClientRect();
+const yesRect=yesBtn.getBoundingClientRect();
+const noRect=noBtn.getBoundingClientRect();
 
-const maxX=cardRect.width-btnRect.width-20;
-const maxY=cardRect.height-btnRect.height-20;
+const maxX=cardRect.width-yesRect.width-10;
+const maxY=cardRect.height-yesRect.height-10;
 
-const x=Math.random()*maxX;
-const y=Math.random()*maxY;
+let x,y,safe=false;
+
+while(!safe){
+
+x=Math.random()*maxX;
+y=Math.random()*maxY;
+
+const overlapX = x + yesRect.width > noRect.left - cardRect.left &&
+                 x < noRect.right - cardRect.left;
+
+const overlapY = y + yesRect.height > noRect.top - cardRect.top &&
+                 y < noRect.bottom - cardRect.top;
+
+if(!(overlapX && overlapY)){
+safe=true;
+}
+
+}
 
 yesBtn.style.left=x+"px";
 yesBtn.style.top=y+"px";
+
 }
 
+// desktop
 yesBtn.addEventListener("mouseover",moveButton);
 
+// phone
 yesBtn.addEventListener("touchstart",function(e){
 e.preventDefault();
 moveButton();
 });
 
+// backup prevention
+yesBtn.addEventListener("click",function(e){
+e.preventDefault();
+moveButton();
+});
+
 function noClick(){
-document.getElementById("message").innerHTML =
+document.getElementById("message").innerHTML=
 "I knew you'd say that 😌";
 }
 
